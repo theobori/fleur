@@ -22,6 +22,7 @@ func main() {
 		port                       int
 		enablePersonalGopherspaces bool
 		enableAutoInlineText       bool
+		verbose                    bool
 	)
 
 	flag.StringVar(
@@ -54,6 +55,12 @@ func main() {
 		false,
 		"Relax non compliant text error and convert to gophermap inline text",
 	)
+	flag.BoolVar(
+		&verbose,
+		"verbose",
+		false,
+		"Enable verbose logs.",
+	)
 
 	flag.Parse()
 
@@ -61,7 +68,13 @@ func main() {
 		log.Fatalln("The port should at least be a positive integer.")
 	}
 
-	serverOptions, err := server.NewOptions(port, directoryPath, domain, enablePersonalGopherspaces)
+	serverOptions, err := server.NewOptions(
+		port,
+		directoryPath,
+		domain,
+		enablePersonalGopherspaces,
+		verbose,
+	)
 	if err != nil {
 		log.Fatalln(err)
 	}

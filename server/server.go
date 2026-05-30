@@ -34,6 +34,10 @@ func NewServer(options *Options, evaluator *evaluator.Evaluator) *Server {
 	return NewServerWithRouter(options, evaluator, NewRouter())
 }
 
+func (s *Server) Options() Options {
+	return *s.options
+}
+
 func (s *Server) NewItem(itemType byte, description string, selector string) *gophermap.Item {
 	return &gophermap.Item{
 		ItemType:    itemType,
@@ -46,13 +50,6 @@ func (s *Server) NewItem(itemType byte, description string, selector string) *go
 
 func (s *Server) SendGophermap(conn net.Conn, itemType byte, message string) error {
 	return gserver.SendGophermap(conn, itemType, message, s.options.Domain, s.options.Port)
-}
-
-func (s *Server) SendGophermapError(conn net.Conn, message string) error {
-	// Absolute path leak prevention
-	message = strings.ReplaceAll(message, s.options.DirectoryPath, "")
-
-	return s.SendGophermap(conn, gophermap.ItemTypeErrorCode, message)
 }
 
 func (s *Server) SendError(conn net.Conn, message string) error {
@@ -132,26 +129,71 @@ func (s *Server) HandleDirectory(ctx *RequestContext) error {
 }
 
 func (s *Server) HandleRequest(ctx *RequestContext) error {
+	if s.options.Verbose {
+		log.Printf("The path '%s' has been requested\n", ctx.VirtualPath)
+	}
+
 	ok, err := s.Router.Route(s, ctx)
 	if err != nil {
 		return err
 	}
 
 	if ok {
+		if s.options.Verbose {
+			log.Printf("The path '%s' matched a route\n", ctx.VirtualPath)
+		}
 		return nil
 	}
 
 	// If no route has matched it will try to serve a file/directory
 	fileInfo, err := os.Stat(ctx.Path)
 	if err != nil {
+		if s.options.Verbose {
+			log.Printf("The path '%s' cannot be stat\n", ctx.VirtualPath)
+		}
 		return err
 	}
 
 	if fileInfo.IsDir() {
+		if s.options.Verbose {
+			log.Printf("The path '%s' is served as a directory\n", ctx.VirtualPath)
+		}
 		return s.HandleDirectory(ctx)
 	}
 
+	if s.options.Verbose {
+		log.Printf("The path '%s' is served as a file\n", ctx.VirtualPath)
+	}
+
 	return s.HandleFile(ctx)
+}
+
+func (s *Server) getRequestContext(conn net.Conn, message string) *RequestContext {
+	var (
+		virtualPath     string
+		searchParameter string
+	)
+
+	questionMarkIndex := strings.Index(message, string(gopher.HT))
+	if questionMarkIndex != -1 {
+		searchParameter = message[questionMarkIndex+1:]
+		virtualPath = message[:questionMarkIndex]
+	} else {
+		searchParameter = ""
+		virtualPath = message
+	}
+
+	virtualPath = common.SafePath(virtualPath)
+	virtualPath = "/" + strings.TrimPrefix(virtualPath, "/")
+
+	ctx := RequestContext{
+		Conn:            conn,
+		VirtualPath:     virtualPath,
+		Path:            filepath.Join(s.options.DirectoryPath, virtualPath),
+		SearchParameter: searchParameter,
+	}
+
+	return &ctx
 }
 
 func (s *Server) handleConnection(conn net.Conn) {
@@ -168,19 +210,11 @@ func (s *Server) handleConnection(conn net.Conn) {
 		s.SendError(conn, "Gopher messages must end with <CR><LF> (\\r\\n)")
 		return
 	}
-
 	message = strings.TrimSuffix(message, gopher.CRLF)
-	message = common.SafePath(message)
-	message = "/" + strings.TrimPrefix(message, "/")
 
-	// TODO: parse parameters ?
-	ctx := RequestContext{
-		Conn:        conn,
-		VirtualPath: message,
-		Path:        filepath.Join(s.options.DirectoryPath, message),
-	}
+	ctx := s.getRequestContext(conn, message)
 
-	err = s.HandleRequest(&ctx)
+	err = s.HandleRequest(ctx)
 	if err != nil {
 		s.SendError(conn, err.Error())
 		return

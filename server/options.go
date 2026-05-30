@@ -15,9 +15,11 @@ type Options struct {
 	// Render personal Gopherspaces, it allows
 	// each user of the system to serve its own files
 	EnablePersonalGopherspaces bool
+	// Enable verbose
+	Verbose bool
 }
 
-func NewOptions(port int, directoryPath string, domain string, enablePersonalGopherspaces bool) (*Options, error) {
+func NewOptions(port int, directoryPath string, domain string, enablePersonalGopherspaces bool, verbose bool) (*Options, error) {
 	if port < 0 {
 		return nil, fmt.Errorf("The port must be positive.")
 	}
@@ -32,6 +34,7 @@ func NewOptions(port int, directoryPath string, domain string, enablePersonalGop
 		DirectoryPath:              directoryAbsolutePath,
 		Domain:                     domain,
 		EnablePersonalGopherspaces: enablePersonalGopherspaces,
+		Verbose:                    verbose,
 	}, nil
 }
 
