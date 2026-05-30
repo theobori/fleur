@@ -1,50 +1,104 @@
 package server
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
 
+const RouteMinimumMaxWeight = 10
+
 type Router struct {
-	routes map[string]RouteCallback
+	routes    []map[string]RouteCallback
+	maxWeight int
+}
+
+func NewRouterWithMaxWeight(maxWeight int) (*Router, error) {
+	if maxWeight < RouteMinimumMaxWeight {
+		return nil, fmt.Errorf("The minimum weight allowed is %d", RouteMinimumMaxWeight)
+	}
+
+	routes := []map[string]RouteCallback{}
+	for range maxWeight + 1 {
+		routes = append(routes, map[string]RouteCallback{})
+	}
+
+	return &Router{
+		routes:    routes,
+		maxWeight: maxWeight,
+	}, nil
 }
 
 func NewRouter() *Router {
-	return &Router{
-		routes: map[string]RouteCallback{},
+	router, _ := NewRouterWithMaxWeight(RouteMinimumMaxWeight)
+
+	return router
+}
+
+func (r *Router) getIndexFromWeight(weight int) (int, error) {
+	if weight < 0 || weight > r.maxWeight {
+		return -1, fmt.Errorf("Weight must be between %d and %d", 0, r.maxWeight)
 	}
+
+	i := r.maxWeight - weight
+
+	return i, nil
 }
 
-func (t *Router) Set(routePattern string, callback RouteCallback) {
-	t.routes[routePattern] = callback
+func (r *Router) SetWithWeight(weight int, pattern string, callback RouteCallback) error {
+	i, err := r.getIndexFromWeight(weight)
+	if err != nil {
+		return err
+	}
+
+	r.routes[i][pattern] = callback
+
+	return nil
 }
 
-func (t *Router) Delete(routePattern string) bool {
-	_, ok := t.routes[routePattern]
+func (r *Router) Set(pattern string, callback RouteCallback) {
+	r.SetWithWeight(r.maxWeight, pattern, callback)
+}
+
+func (r *Router) DeleteWithWeight(weight int, pattern string) (bool, error) {
+	i, err := r.getIndexFromWeight(weight)
+	if err != nil {
+		return false, err
+	}
+
+	_, ok := r.routes[i][pattern]
 	if !ok {
-		return false
+		return false, nil
 	}
 
-	delete(t.routes, routePattern)
+	delete(r.routes[i], pattern)
 
-	return true
+	return true, nil
 }
 
-func (t *Router) Route(server *Server, ctx *RequestContext) (bool, error) {
+func (r *Router) Delete(pattern string) bool {
+	ok, _ := r.DeleteWithWeight(r.maxWeight, pattern)
+
+	return ok
+}
+
+func (r *Router) Route(server *Server, ctx *RequestContext) (bool, error) {
 	route := strings.TrimSuffix(ctx.VirtualPath, "/")
 
-	for routePattern, callback := range t.routes {
-		ok, _ := regexp.MatchString(routePattern, route)
-		if !ok {
-			continue
-		}
+	for _, routes := range r.routes {
+		for pattern, callback := range routes {
+			ok, _ := regexp.MatchString(pattern, route)
+			if !ok {
+				continue
+			}
 
-		err := callback(server, ctx)
-		if err != nil {
-			return false, err
-		}
+			err := callback(server, ctx)
+			if err != nil {
+				return false, err
+			}
 
-		return true, nil
+			return true, nil
+		}
 	}
 
 	return false, nil

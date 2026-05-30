@@ -26,18 +26,18 @@ func GetDirectoryFilesText(path string, virtualPath string, domain string, port 
 
 	for i, entry := range entries {
 		entryName := entry.Name()
-		absoluteEntryPath := filepath.Join(path, entryName)
+		entryPath := filepath.Join(path, entryName)
 
 		var item *Item
 		if entry.IsDir() {
 			item, err = NewItemFromDirectoryPath(
-				absoluteEntryPath,
+				entryPath,
 				domain,
 				port,
 			)
 		} else {
 			item, err = NewItemFromFilePath(
-				absoluteEntryPath,
+				entryPath,
 				domain,
 				port,
 			)
@@ -47,9 +47,7 @@ func GetDirectoryFilesText(path string, virtualPath string, domain string, port 
 			return "", err
 		}
 
-		virtualEntryPath := filepath.Join(virtualPath, entryName)
-
-		item.Selector = virtualEntryPath
+		item.Selector = filepath.Join(virtualPath, entryName)
 		item.Description = entryName
 
 		lines[i+1] = item.String()

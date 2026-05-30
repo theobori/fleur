@@ -119,18 +119,22 @@ func main() {
 
 	router := server.NewRouter()
 	if enablePersonalGopherspaces {
-		router.Set(
+		router.SetWithWeight(
+			0,
 			"^/~.*",
 			func(server *server.Server, ctx *server.RequestContext) error {
 				splittedVirtualPath := strings.Split(ctx.VirtualPath[2:], "/")
-				username := splittedVirtualPath[0]
-				rest := strings.Join(splittedVirtualPath[1:], "/")
-				userPath := filepath.Join("/home", username, "public_gopher", rest)
+				userPath := filepath.Join(
+					"/home",
+					splittedVirtualPath[0],
+					"public_gopher",
+					strings.Join(splittedVirtualPath[1:], "/"),
+				)
 
 				fileInfo, err := os.Stat(userPath)
 				if err != nil {
 					errMessage := strings.ReplaceAll(err.Error(), userPath, ctx.VirtualPath)
-					return fmt.Errorf(errMessage)
+					return fmt.Errorf("%s", errMessage)
 				}
 
 				ctx.Path = userPath
