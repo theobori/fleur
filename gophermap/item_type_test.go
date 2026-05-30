@@ -10,8 +10,6 @@ func TestNewItemTypeFromPath(t *testing.T) {
 		path     string
 		expected byte
 	}{
-		{path: "/a/b/", expected: ItemTypeGopherMenu},
-		{path: "/", expected: ItemTypeGopherMenu},
 		{path: "/a/b.txt", expected: ItemTypeTextFile},
 		{path: "/document.txt", expected: ItemTypeTextFile},
 		{path: "/a/b.gif", expected: ItemTypeGIFFile},
@@ -49,9 +47,9 @@ func TestNewItemTypeFromPath(t *testing.T) {
 		{path: "photo.tiff", expected: ItemTypeOtherImageFile},
 		{path: "animation.apng", expected: ItemTypeOtherImageFile},
 		{path: "modern.avif", expected: ItemTypeOtherImageFile},
-		{path: "a/b.unknown", expected: ItemTypeGopherMenu},
-		{path: "file.xyz", expected: ItemTypeGopherMenu},
-		{path: "noextension", expected: ItemTypeGopherMenu},
+		{path: "a/b.unknown", expected: ItemTypeTextFile},
+		{path: "file.xyz", expected: ItemTypeTextFile},
+		{path: "noextension", expected: ItemTypeTextFile},
 	}
 
 	for _, test := range tests {

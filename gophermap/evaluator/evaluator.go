@@ -24,19 +24,19 @@ func (e *Evaluator) Options() Options {
 	return *e.options
 }
 
-func (e *Evaluator) evalLine(line string) (string, error) {
-	ans, err := e.ExtensionManager.Extend(line, e)
+func (e *Evaluator) evalLine(ctx *ExtensionContext) (string, error) {
+	ans, err := e.ExtensionManager.Extend(e, ctx)
 	if err == nil {
 		return ans, nil
 	}
 
 	if !e.options.EnableAutoInlineText {
-		return "", fmt.Errorf("Unable to evaluate the line below:\n%s", line)
+		return "", fmt.Errorf("Unable to evaluate the line below:\n%s", ctx.Line)
 	}
 
 	item, err := gophermap.NewItem(
 		gophermap.ItemTypeInlineText,
-		line,
+		ctx.Line,
 		"/",
 		e.options.Domain,
 		e.options.Port,
@@ -50,16 +50,22 @@ func (e *Evaluator) evalLine(line string) (string, error) {
 	return ans, nil
 }
 
-func (e *Evaluator) Eval(source string) (string, error) {
+func (e *Evaluator) EvalWithPathContext(source string, path string, virtualPath string) (string, error) {
 	destinationLines := []string{}
-	lines := strings.Split(source, "\n")
+	lines := strings.SplitSeq(source, "\n")
 
-	for _, sourceLine := range lines {
+	for sourceLine := range lines {
 		if len(sourceLine) == 0 {
 			continue
 		}
 
-		destinationLine, err := e.evalLine(sourceLine)
+		ctx := ExtensionContext{
+			Line:        sourceLine,
+			Path:        path,
+			VirtualPath: virtualPath,
+		}
+
+		destinationLine, err := e.evalLine(&ctx)
 		if err != nil {
 			return "", err
 		}
@@ -72,11 +78,11 @@ func (e *Evaluator) Eval(source string) (string, error) {
 	return ans, nil
 }
 
-func (e *Evaluator) EvalFile(path string) (string, error) {
+func (e *Evaluator) EvalFile(path string, virtualPath string) (string, error) {
 	source, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
 
-	return e.Eval(string(source))
+	return e.EvalWithPathContext(string(source), path, virtualPath)
 }

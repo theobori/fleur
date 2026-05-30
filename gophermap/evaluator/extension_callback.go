@@ -1,3 +1,3 @@
 package evaluator
 
-type ExtensionCallback func(text string, e *Evaluator) (string, error)
+type ExtensionCallback func(e *Evaluator, ctx *ExtensionContext) (string, error)

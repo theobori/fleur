@@ -31,14 +31,14 @@ func (t *ExtensionManager) Delete(pattern string) bool {
 	return true
 }
 
-func (t *ExtensionManager) Extend(text string, evaluator *Evaluator) (string, error) {
+func (t *ExtensionManager) Extend(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
 	for pattern, callback := range t.extensions {
-		ok, _ := regexp.MatchString(pattern, text)
+		ok, _ := regexp.MatchString(pattern, ctx.Line)
 		if !ok {
 			continue
 		}
 
-		ans, err := callback(text, evaluator)
+		ans, err := callback(evaluator, ctx)
 		if err != nil {
 			return "", err
 		}
@@ -46,5 +46,5 @@ func (t *ExtensionManager) Extend(text string, evaluator *Evaluator) (string, er
 		return ans, nil
 	}
 
-	return text, fmt.Errorf("The text below could not been extended:\n%s", text)
+	return ctx.Line, fmt.Errorf("The text below could not been extended:\n%s", ctx.Line)
 }
