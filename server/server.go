@@ -51,7 +51,6 @@ func (s *Server) SendGophermap(conn net.Conn, itemType byte, message string) err
 func (s *Server) SendGophermapError(conn net.Conn, message string) error {
 	// Absolute path leak prevention
 	message = strings.ReplaceAll(message, s.options.DirectoryPath, "")
-	// TODO: send only if a menuentry has been request
 
 	return s.SendGophermap(conn, gophermap.ItemTypeErrorCode, message)
 }
