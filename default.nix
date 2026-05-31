@@ -13,7 +13,7 @@ buildGoModule {
   ];
 
   meta = {
-    description = "KISS Gopher server";
+    description = "KISS RFC1436 Gopher application framework and CLI ";
     homepage = "https://github.com/theobori/fleur";
     license = lib.licenses.mit;
     mainProgram = "fleur";
