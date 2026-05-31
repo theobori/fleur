@@ -33,4 +33,6 @@ go.work.sum
 .direnv
 result
 /fleur
-example
+/example
+cmd/example*
+/weather

@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -34,7 +33,7 @@ func main() {
 	flag.StringVar(
 		&domain,
 		"domain",
-		"",
+		"localhost",
 		"Gopher domain",
 	)
 	flag.IntVar(
@@ -72,7 +71,6 @@ func main() {
 		port,
 		directoryPath,
 		domain,
-		enablePersonalGopherspaces,
 		verbose,
 	)
 	if err != nil {
@@ -119,8 +117,7 @@ func main() {
 
 	router := server.NewRouter()
 	if enablePersonalGopherspaces {
-		router.SetWithWeight(
-			0,
+		router.Set(
 			"^/~.*",
 			func(server *server.Server, ctx *server.RequestContext) error {
 				splittedVirtualPath := strings.Split(ctx.VirtualPath[2:], "/")
@@ -131,19 +128,9 @@ func main() {
 					strings.Join(splittedVirtualPath[1:], "/"),
 				)
 
-				fileInfo, err := os.Stat(userPath)
-				if err != nil {
-					errMessage := strings.ReplaceAll(err.Error(), userPath, ctx.VirtualPath)
-					return fmt.Errorf("%s", errMessage)
-				}
-
 				ctx.Path = userPath
 
-				if !fileInfo.IsDir() {
-					return server.HandleFile(ctx)
-				}
-
-				return server.HandleDirectory(ctx)
+				return server.HandlePath(ctx)
 			},
 		)
 	}

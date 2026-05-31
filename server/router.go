@@ -57,7 +57,7 @@ func (r *Router) SetWithWeight(weight int, pattern string, callback RouteCallbac
 }
 
 func (r *Router) Set(pattern string, callback RouteCallback) {
-	r.SetWithWeight(r.maxWeight, pattern, callback)
+	r.SetWithWeight(0, pattern, callback)
 }
 
 func (r *Router) DeleteWithWeight(weight int, pattern string) (bool, error) {
@@ -77,7 +77,7 @@ func (r *Router) DeleteWithWeight(weight int, pattern string) (bool, error) {
 }
 
 func (r *Router) Delete(pattern string) bool {
-	ok, _ := r.DeleteWithWeight(r.maxWeight, pattern)
+	ok, _ := r.DeleteWithWeight(0, pattern)
 
 	return ok
 }

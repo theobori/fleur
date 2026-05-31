@@ -23,16 +23,16 @@ func SendBytes(conn net.Conn, bytes []byte) error {
 	return nil
 }
 
-func SendMessage(conn net.Conn, message string) error {
-	lines := strings.Split(message, "\n")
+func SendString(conn net.Conn, s string) error {
+	lines := strings.Split(s, "\n")
 	gopherMessage := strings.Join(lines, gopher.CRLF)
 	bytes := []byte(gopherMessage)
 
 	return SendBytes(conn, bytes)
 }
 
-func SendGophermap(conn net.Conn, itemType byte, message string, domain string, port int) error {
-	lines := strings.Split(message, "\n")
+func SendGophermap(conn net.Conn, itemType byte, s string, domain string, port int) error {
+	lines := strings.Split(s, "\n")
 	for i, line := range lines {
 		item := gophermap.Item{
 			ItemType:    itemType,
@@ -47,5 +47,5 @@ func SendGophermap(conn net.Conn, itemType byte, message string, domain string, 
 
 	gophermapErrorMessage := strings.Join(lines, "\n")
 
-	return SendMessage(conn, gophermapErrorMessage)
+	return SendString(conn, gophermapErrorMessage)
 }

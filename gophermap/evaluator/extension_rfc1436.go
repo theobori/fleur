@@ -6,7 +6,7 @@ import (
 	"github.com/theobori/fleur/gophermap"
 )
 
-func extendRFC1436Generic(_ *Evaluator, ctx *ExtensionContext) (string, error) {
+func ExtendRFC1436Generic(_ *Evaluator, ctx *ExtensionContext) (string, error) {
 	ok, err := gophermap.IsGophermapLine(ctx.Line)
 	if err != nil {
 		return "", err
@@ -20,71 +20,71 @@ func extendRFC1436Generic(_ *Evaluator, ctx *ExtensionContext) (string, error) {
 }
 
 func ExtendTextFileItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendGopherMenuItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendCCSONameserverItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendErrorCodeItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendBinHexEncodedFileItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendDOSBinaryItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendUNIXUuencodedFileItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendGopherFullTextSearchItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendTelnetItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendBinaryFileItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendMirrorOrAlternateServerItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendTelnet3270Item(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendHTMLItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendInlineTextItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendGIFFileItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendSoundFileItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func ExtendOtherImageFileItem(evaluator *Evaluator, ctx *ExtensionContext) (string, error) {
-	return extendRFC1436Generic(evaluator, ctx)
+	return ExtendRFC1436Generic(evaluator, ctx)
 }
 
 func RFC1436ItemsExtensionManager() *ExtensionManager {

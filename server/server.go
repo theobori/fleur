@@ -55,7 +55,7 @@ func (s *Server) SendGophermap(conn net.Conn, itemType byte, message string) err
 func (s *Server) SendError(conn net.Conn, message string) error {
 	// Absolute path leak prevention
 	message = strings.ReplaceAll(message, s.options.DirectoryPath, "")
-	return gserver.SendMessage(conn, fmt.Sprintf("Error: %s", message))
+	return gserver.SendString(conn, fmt.Sprintf("Error: %s", message))
 }
 
 func (s *Server) handleGophermapFilePath(ctx *RequestContext) error {
@@ -64,7 +64,7 @@ func (s *Server) handleGophermapFilePath(ctx *RequestContext) error {
 		return err
 	}
 
-	err = gserver.SendMessage(ctx.Conn, res)
+	err = gserver.SendString(ctx.Conn, res)
 	if err != nil {
 		return err
 	}
@@ -120,7 +120,7 @@ func (s *Server) HandleDirectory(ctx *RequestContext) error {
 		return err
 	}
 
-	err = gserver.SendMessage(ctx.Conn, message)
+	err = gserver.SendString(ctx.Conn, message)
 	if err != nil {
 		return err
 	}
@@ -128,24 +128,7 @@ func (s *Server) HandleDirectory(ctx *RequestContext) error {
 	return nil
 }
 
-func (s *Server) HandleRequest(ctx *RequestContext) error {
-	if s.options.Verbose {
-		log.Printf("The path '%s' has been requested\n", ctx.VirtualPath)
-	}
-
-	ok, err := s.Router.Route(s, ctx)
-	if err != nil {
-		return err
-	}
-
-	if ok {
-		if s.options.Verbose {
-			log.Printf("The path '%s' matched a route\n", ctx.VirtualPath)
-		}
-		return nil
-	}
-
-	// If no route has matched it will try to serve a file/directory
+func (s *Server) HandlePath(ctx *RequestContext) error {
 	fileInfo, err := os.Stat(ctx.Path)
 	if err != nil {
 		if s.options.Verbose {
@@ -166,6 +149,27 @@ func (s *Server) HandleRequest(ctx *RequestContext) error {
 	}
 
 	return s.HandleFile(ctx)
+}
+
+func (s *Server) HandleRequest(ctx *RequestContext) error {
+	if s.options.Verbose {
+		log.Printf("The path '%s' has been requested\n", ctx.VirtualPath)
+	}
+
+	ok, err := s.Router.Route(s, ctx)
+	if err != nil {
+		return err
+	}
+
+	if ok {
+		if s.options.Verbose {
+			log.Printf("The path '%s' matched a route\n", ctx.VirtualPath)
+		}
+		return nil
+	}
+
+	// If no route has matched it will try to serve a file/directory
+	return s.HandlePath(ctx)
 }
 
 func (s *Server) getRequestContext(conn net.Conn, message string) *RequestContext {

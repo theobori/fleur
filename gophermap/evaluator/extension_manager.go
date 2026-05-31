@@ -56,7 +56,7 @@ func (e *ExtensionManager) SetWithWeight(weight int, pattern string, callback Ex
 }
 
 func (e *ExtensionManager) Set(pattern string, callback ExtensionCallback) {
-	e.SetWithWeight(e.maxWeight, pattern, callback)
+	e.SetWithWeight(0, pattern, callback)
 }
 
 func (e *ExtensionManager) DeleteWithWeight(weight int, pattern string, callback ExtensionCallback) (bool, error) {
@@ -76,7 +76,7 @@ func (e *ExtensionManager) DeleteWithWeight(weight int, pattern string, callback
 }
 
 func (e *ExtensionManager) Delete(pattern string, callback ExtensionCallback) bool {
-	ok, _ := e.DeleteWithWeight(e.maxWeight, pattern, callback)
+	ok, _ := e.DeleteWithWeight(0, pattern, callback)
 
 	return ok
 }

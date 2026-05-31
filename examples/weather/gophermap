@@ -1,0 +1,6 @@
+iThe current time is {{current-time}} 	/		7070
+i 	/		7070
+iBelow the current time using the custom 'z' item type 	/		7070
+z
+i 	/		7070
+1Check out the weather 	/weather	localhost	7070
