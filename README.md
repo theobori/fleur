@@ -6,7 +6,7 @@
 
 The name of the project is fleur, pronounced \\flœʁ\\, which means flower.
 
-This GitHub repository is a KISS project that contains a framework and a CLI. The framework is used to build Gopher applications using the Go language. The goal is to enable users to easily create their own custom Gopher servers in accordance with RFC 1436. The CLI is an example of a Gopher application implemented using the framework.
+This GitHub repository is a [KISS](https://en.wikipedia.org/wiki/KISS_principle) project that contains a framework and a CLI. The framework is used to build Gopher applications using the Go language. The goal is to enable users to easily create their own custom Gopher servers in accordance with [RFC 1436](https://www.rfc-editor.org/rfc/rfc1436.html). The CLI is an example of a Gopher application implemented using the framework.
 
 ## Getting started
 
@@ -42,7 +42,7 @@ Also, only files named `gophermap` and those with the `.gophermap` extension wil
 
 ### Extension
 
-An extension is a pair consisting of a regex and a function; it is similar to the routes in the router component, except that here, an extension is specific to the gophermap format. Creating an extension allows you, for example, to add, modify, or delete Gophermap item types. For instance, all standard RFC1436 item types are implemented using extensions in the Fleur CLI.
+An extension is a pair consisting of a regex and a function; it is similar to the routes in the router component, except that here, an extension is specific to the gophermap format. Creating an extension allows you, for example, to add, modify, or delete Gophermap item types. For instance, all standard [RFC 1436](https://www.rfc-editor.org/rfc/rfc1436.html) item types are implemented using extensions in the Fleur CLI.
 
 ### Extension Manager
 
@@ -76,6 +76,36 @@ Usage of ./fleur:
     	Gopher port (default 70)
   -verbose
     	Enable verbose logs.
+```
+
+### NixOS module
+
+This project also provides a NixOS module for managing the fleur CLI using a systemd service unit. Inside your `flake.nix`, you can start by adding the following lines.
+
+```nix
+{
+  inputs = {
+    fleur.url = "github:theobori/fleur";
+  };
+}
+```
+
+You can then include the module and its default overlay in the system configuration as shown below.
+
+```nix
+{ inputs, ... }: {
+  imports = with inputs; [ fleur.nixosModules.default ];
+
+  services.fleur = {
+    enable = true;
+    directory = "${./my-directory}";
+    port = 7070;
+    verbose = true;
+    autoInlineText = true;
+    personalGopherspaces = true;
+    # See other options in ./nixos/fleur.nix
+  };
+}
 ```
 
 ## Examples
