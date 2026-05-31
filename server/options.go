@@ -27,10 +27,10 @@ func NewOptions(port int, directoryPath string, domain string, verbose bool) (*O
 	}
 
 	return &Options{
-		Port:                       port,
-		DirectoryPath:              directoryAbsolutePath,
-		Domain:                     domain,
-		Verbose:                    verbose,
+		Port:          port,
+		DirectoryPath: directoryAbsolutePath,
+		Domain:        domain,
+		Verbose:       verbose,
 	}, nil
 }
 

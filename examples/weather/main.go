@@ -37,7 +37,7 @@ func main() {
 		"^z$",
 		func(e *evaluator.Evaluator, ctx *evaluator.ExtensionContext) (string, error) {
 			options := e.Options()
-			
+
 			item, err := gophermap.NewItem(
 				gophermap.ItemTypeInlineText,
 				time.Now().String()[:19],
