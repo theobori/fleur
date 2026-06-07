@@ -52,13 +52,11 @@ func (e *Evaluator) evalLine(ctx *ExtensionContext) (string, error) {
 
 func (e *Evaluator) EvalWithPathContext(source string, path string, virtualPath string) (string, error) {
 	destinationLines := []string{}
+
+	source = strings.Trim(source, "\n")
 	lines := strings.SplitSeq(source, "\n")
 
 	for sourceLine := range lines {
-		if len(sourceLine) == 0 {
-			continue
-		}
-
 		ctx := ExtensionContext{
 			Line:        sourceLine,
 			Path:        path,
