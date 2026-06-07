@@ -59,7 +59,7 @@ func (s *Server) SendError(conn net.Conn, message string) error {
 }
 
 func (s *Server) handleGophermapFilePath(ctx *RequestContext) error {
-	res, err := s.evaluator.EvalFile(ctx.Path, ctx.VirtualPath)
+	res, err := s.evaluator.EvaluateFile(ctx.Path, ctx.VirtualPath)
 	if err != nil {
 		return err
 	}
@@ -102,11 +102,13 @@ func (s *Server) HandleDirectory(ctx *RequestContext) error {
 	indexFilePath := filepath.Join(ctx.Path, gophermap.DefaultIndexFileName)
 	indexFileContent, err := os.ReadFile(indexFilePath)
 	if err == nil {
-		message, err = s.evaluator.EvalWithPathContext(
-			string(indexFileContent),
-			ctx.Path,
-			ctx.VirtualPath,
-		)
+		evaluatorContext := evaluator.EvaluatorContext{
+			Source:      string(indexFileContent),
+			Path:        ctx.Path,
+			VirtualPath: ctx.VirtualPath,
+		}
+
+		message, err = s.evaluator.Evaluate(&evaluatorContext)
 	} else {
 		message, err = gophermap.GetDirectoryFilesText(
 			ctx.Path,

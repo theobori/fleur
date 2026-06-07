@@ -24,7 +24,7 @@ func (e *Evaluator) Options() Options {
 	return *e.options
 }
 
-func (e *Evaluator) evalLine(ctx *ExtensionContext) (string, error) {
+func (e *Evaluator) evaluateSourceLine(ctx *ExtensionContext) (string, error) {
 	ans, err := e.ExtensionManager.Extend(e, ctx)
 	if err == nil {
 		return ans, nil
@@ -50,20 +50,20 @@ func (e *Evaluator) evalLine(ctx *ExtensionContext) (string, error) {
 	return ans, nil
 }
 
-func (e *Evaluator) EvalWithPathContext(source string, path string, virtualPath string) (string, error) {
+func (e *Evaluator) Evaluate(ctx *EvaluatorContext) (string, error) {
 	destinationLines := []string{}
 
-	source = strings.Trim(source, "\n")
-	lines := strings.SplitSeq(source, "\n")
+	ctx.Source = strings.Trim(ctx.Source, "\n")
+	lines := strings.SplitSeq(ctx.Source, "\n")
 
 	for sourceLine := range lines {
 		ctx := ExtensionContext{
 			Line:        sourceLine,
-			Path:        path,
-			VirtualPath: virtualPath,
+			Path:        ctx.Path,
+			VirtualPath: ctx.VirtualPath,
 		}
 
-		destinationLine, err := e.evalLine(&ctx)
+		destinationLine, err := e.evaluateSourceLine(&ctx)
 		if err != nil {
 			return "", err
 		}
@@ -76,11 +76,17 @@ func (e *Evaluator) EvalWithPathContext(source string, path string, virtualPath 
 	return ans, nil
 }
 
-func (e *Evaluator) EvalFile(path string, virtualPath string) (string, error) {
+func (e *Evaluator) EvaluateFile(path string, virtualPath string) (string, error) {
 	source, err := os.ReadFile(path)
 	if err != nil {
 		return "", err
 	}
 
-	return e.EvalWithPathContext(string(source), path, virtualPath)
+	ctx := EvaluatorContext{
+		Source:      string(source),
+		Path:        path,
+		VirtualPath: virtualPath,
+	}
+
+	return e.Evaluate(&ctx)
 }
