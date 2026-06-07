@@ -30,7 +30,7 @@ A route is a pair consisting of a regular expression and a function used by a ro
 
 ### Router
 
-This is an interface that manages routes. If one of the regexes matches the request path, the associated function is called. For example, a client requesting a path matching the regex `^/dice$` would receive a GopherMap page containing the result of a dice roll.
+This is an interface that manages routes. If one of the regexes matches the request path, the associated function is called. For example, a client requesting a path matching the regex `^/dice$` would receive a gophermap page containing the result of a dice roll.
 
 ### Server
 
@@ -42,21 +42,21 @@ Also, only files named `gophermap` and those with the `.gophermap` extension wil
 
 ### Extension
 
-An extension is a pair consisting of a regex and a function; it is similar to the routes in the router component, except that here, an extension is specific to the gophermap format. Creating an extension allows you, for example, to add, modify, or delete Gophermap item types. For instance, all standard [RFC 1436](https://www.rfc-editor.org/rfc/rfc1436.html) item types are implemented using extensions in the Fleur CLI.
+An extension is a pair consisting of a regex and a function; it is similar to the routes in the router component, except that here, an extension is specific to the gophermap format. Creating an extension allows you, for example, to add, modify, or delete gophermap item types. For instance, all standard [RFC 1436](https://www.rfc-editor.org/rfc/rfc1436.html) item types are implemented using extensions in the Fleur CLI.
 
 ### Extension Manager
 
-This is an interface for managing extensions; it is used by the evaluator to extend the Gophermap.
+This is an interface for managing extensions; it is used by the evaluator to extend the gophermap.
 
 ### Evaluator
 
-An evaluator evaluates GopherMap files when the server is ready to serve them. This evaluation works line by line and allows the GopherMap format to be extended by adding extensions.
+An evaluator evaluates gophermap files when the server is ready to serve them. This evaluation works line by line and allows the gophermap format to be extended by adding extensions.
 
 ## CLI
 
 The fleur CLI is a Gopher application that serves files. It optionally supports personal Gopherspaces on UNIX systems, with the virtual path `/~username/` being converted to `/home/username/public_gopher`.
 
-It also implements an extension that lists files in the current directory. To use it, type `*` on a line. This feature is inspired by gophernicus.
+It also implements an extension that lists files in the current directory. To use it, type `*` on a line. This feature is inspired by [gophernicus](https://github.com/gophernicus/gophernicus).
 
 ### Help Message
 
