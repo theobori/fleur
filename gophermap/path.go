@@ -4,9 +4,19 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/theobori/fleur/internal/common"
 )
 
-func GetDirectoryFilesText(path string, virtualPath string, domain string, port int) (string, error) {
+const DefaultMaxColumns = 70
+
+func GetDirectoryFilesAsGophermap(
+	path string,
+	virtualPath string,
+	domain string,
+	port int,
+	maxColumns int,
+) (string, error) {
 	entries, err := os.ReadDir(path)
 	if err != nil {
 		return "", err
@@ -28,27 +38,42 @@ func GetDirectoryFilesText(path string, virtualPath string, domain string, port 
 		entryName := entry.Name()
 		entryPath := filepath.Join(path, entryName)
 
-		var item *Item
+		entryInfo, err := entry.Info()
+		if err != nil {
+			return "", err
+		}
+
+		var (
+			item       *Item
+			sizeString string
+		)
 		if entry.IsDir() {
 			item, err = NewItemFromDirectoryPath(
 				entryPath,
 				domain,
 				port,
 			)
+			sizeString = "-"
 		} else {
 			item, err = NewItemFromFilePath(
 				entryPath,
 				domain,
 				port,
 			)
+			sizeString = common.GetStringFromSize(entryInfo.Size())
 		}
 
 		if err != nil {
 			return "", err
 		}
 
+		entryModString := entryInfo.ModTime().String()[:16]
+		rightColumn := sizeString + "   " + entryModString
+		spacesAmount := max(maxColumns-len(entryName)-len(rightColumn), 1)
+		spaces := strings.Repeat(" ", spacesAmount)
+
+		item.Description = entryName + spaces + rightColumn
 		item.Selector = filepath.Join(virtualPath, entryName)
-		item.Description = entryName
 
 		lines[i+1] = item.String()
 	}

@@ -43,6 +43,7 @@ func NewItemFromFilePath(filePath string, domain string, port int) (*Item, error
 	var selector string
 	// We assume that if it is an HTML, CSS or JS file, it should be served via a HTTP server
 	// We also assume that HTTP is available and it should automatically redirect to HTTPS
+	// TODO: Maybe I should not handle it
 	if itemType == 'h' {
 		selector = fmt.Sprintf("URL:http://%s/%s", domain, filePath)
 		port = 80

@@ -55,6 +55,7 @@ func (s *Server) SendGophermap(conn net.Conn, itemType byte, message string) err
 func (s *Server) SendError(conn net.Conn, message string) error {
 	// Absolute path leak prevention
 	message = strings.ReplaceAll(message, s.options.DirectoryPath, "")
+
 	return gserver.SendString(conn, fmt.Sprintf("Error: %s", message))
 }
 
@@ -110,11 +111,12 @@ func (s *Server) HandleDirectory(ctx *RequestContext) error {
 
 		message, err = s.evaluator.Evaluate(&evaluatorContext)
 	} else {
-		message, err = gophermap.GetDirectoryFilesText(
+		message, err = gophermap.GetDirectoryFilesAsGophermap(
 			ctx.Path,
 			ctx.VirtualPath,
 			s.options.Domain,
 			s.options.Port,
+			gophermap.DefaultMaxColumns,
 		)
 	}
 

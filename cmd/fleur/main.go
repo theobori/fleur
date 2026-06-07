@@ -101,11 +101,12 @@ func main() {
 			}
 
 			options := e.Options()
-			text, err := gophermap.GetDirectoryFilesText(
+			text, err := gophermap.GetDirectoryFilesAsGophermap(
 				path,
 				virtualPath,
 				options.Domain,
 				options.Port,
+				gophermap.DefaultMaxColumns,
 			)
 			if err != nil {
 				return ctx.Line, err
