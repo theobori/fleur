@@ -58,7 +58,7 @@ func main() {
 		&verbose,
 		"verbose",
 		false,
-		"Enable verbose logs.",
+		"Enable verbose logs",
 	)
 
 	flag.Parse()
