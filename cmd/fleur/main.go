@@ -22,6 +22,9 @@ func main() {
 		enablePersonalGopherspaces bool
 		enableAutoInlineText       bool
 		verbose                    bool
+		enableTLS                  bool
+		certificatePath            string
+		keyPath                    string
 	)
 
 	flag.StringVar(
@@ -60,6 +63,24 @@ func main() {
 		false,
 		"Enable verbose logs",
 	)
+	flag.BoolVar(
+		&enableTLS,
+		"enable-tls",
+		false,
+		"Enable Gopher over TLS",
+	)
+	flag.StringVar(
+		&certificatePath,
+		"tls-certificate",
+		"",
+		"x509 certificate path used for the TLS communication",
+	)
+	flag.StringVar(
+		&keyPath,
+		"tls-key",
+		"",
+		"Private key path used for the TLS communication",
+	)
 
 	flag.Parse()
 
@@ -72,6 +93,9 @@ func main() {
 		directoryPath,
 		domain,
 		verbose,
+		enableTLS,
+		certificatePath,
+		keyPath,
 	)
 	if err != nil {
 		log.Fatalln(err)

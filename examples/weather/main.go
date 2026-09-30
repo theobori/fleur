@@ -20,6 +20,9 @@ func main() {
 		"./examples/weather",
 		"localhost",
 		true,
+		false,
+		"",
+		"",
 	)
 	if err != nil {
 		log.Fatalln(err)

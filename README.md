@@ -52,6 +52,20 @@ This is an interface for managing extensions; it is used by the evaluator to ext
 
 An evaluator evaluates gophermap files when the server is ready to serve them. This evaluation works line by line and allows the gophermap format to be extended by adding extensions.
 
+## Gopher over TLS
+
+The framework natively supports the Gopher over TLS protocol in addition to the Gopher protocol on the same port. If you have the OpenSSL tool, you can generate a certificate key pair using, for example, the command line below.
+
+```bash
+openssl req \
+  -x509 \
+  -newkey rsa:2048 \
+  -keyout server.key \
+  -out server.crt \
+  -days 365 \
+  -nodes -subj "/CN=localhost"
+```
+
 ## CLI
 
 The fleur CLI is a Gopher application that serves files. It optionally supports personal Gopherspaces on UNIX systems, with the virtual path `/~username/` being converted to `/home/username/public_gopher`.
@@ -72,10 +86,16 @@ Usage of ./fleur:
     	Relax non compliant text error and convert to gophermap inline text
   -enable-personal-gopherspaces
     	Enable personal Gopherspaces, it allows each user of the system to serve its own files
+  -enable-tls
+    	Enable Gopher over TLS
   -port int
     	Gopher port (default 70)
+  -tls-certificate string
+    	x509 certificate path used for the TLS communication
+  -tls-key string
+    	Private key path used for the TLS communication
   -verbose
-    	Enable verbose logs.
+    	Enable verbose logs
 ```
 
 ### NixOS module

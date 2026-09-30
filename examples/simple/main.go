@@ -43,6 +43,9 @@ func main() {
 		directoryPath,
 		domain,
 		true,
+		false,
+		"",
+		"",
 	)
 	if err != nil {
 		log.Fatalln(err)

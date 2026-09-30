@@ -96,6 +96,22 @@ in
         Relax non compliant text error and convert to gophermap inline text.
       '';
     };
+
+    tlsCertificate = mkOption {
+      type = types.nullOr types.str;
+      default = false;
+      description = ''
+        x509 certificate path used for the TLS communication.
+      '';
+    };
+
+    tlsKey = mkOption {
+      type = types.nullOr types.str;
+      default = false;
+      description = ''
+        Private key path used for the TLS communication.
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
@@ -120,10 +136,13 @@ in
           "${lib.getExe cfg.package}"
           + (lib.optionalString (cfg.directory != null) " -directory ${cfg.directory}")
           + (lib.optionalString (cfg.domain != null) " -domain ${cfg.domain}")
-          + (lib.optionalString (cfg.port != null) " -port ${builtins.toString cfg.port}")
+          + (lib.optionalString (cfg.port != null) " -port ${toString cfg.port}")
           + (lib.optionalString cfg.verbose " -verbose")
           + (lib.optionalString cfg.autoInlineText " -enable-auto-inline-text")
-          + (lib.optionalString cfg.personalGopherspaces " -enable-personal-gopherspaces");
+          + (lib.optionalString cfg.personalGopherspaces " -enable-personal-gopherspaces")
+          + (lib.optionalString (
+            cfg.tlsCertificate != null && cfg.tlsKey != null
+          ) " -enable-tls -tls-certificate '${cfg.tlsCertificate}' -tls-key '${cfg.tlsKey}'");
 
         User = cfg.user;
         Group = cfg.group;

@@ -36,3 +36,5 @@ result
 /example
 cmd/example*
 /weather
+server.crt
+server.key

@@ -2,6 +2,7 @@ package server
 
 import (
 	"bufio"
+	"crypto/tls"
 	"fmt"
 	"log"
 	"net"
@@ -15,6 +16,16 @@ import (
 	"github.com/theobori/fleur/gophermap/evaluator"
 	"github.com/theobori/fleur/internal/common"
 )
+
+// See https://stackoverflow.com/questions/75115083/handling-tcp-and-tls-together-golang
+type bufferedConn struct {
+	net.Conn
+	reader *bufio.Reader
+}
+
+func (c *bufferedConn) Read(p []byte) (int, error) {
+	return c.reader.Read(p)
+}
 
 type Server struct {
 	options   *Options
@@ -204,10 +215,32 @@ func (s *Server) getRequestContext(conn net.Conn, message string) *RequestContex
 	return &ctx
 }
 
-func (s *Server) handleConnection(conn net.Conn) {
+func (s *Server) handleConnection(conn net.Conn, cert *tls.Certificate) {
 	defer conn.Close()
 
 	reader := bufio.NewReader(conn)
+
+	if s.options.EnableTLS {
+		b, err := reader.Peek(1)
+		if err != nil {
+			return
+		}
+
+		if b[0] == 0x16 {
+			conn = &bufferedConn{
+				Conn:   conn,
+				reader: reader,
+			}
+
+			conn = tls.Server(conn, &tls.Config{
+				Certificates: []tls.Certificate{*cert},
+				MinVersion:   tls.VersionTLS12,
+			})
+
+			reader = bufio.NewReader(conn)
+		}
+	}
+
 	message, err := reader.ReadString('\n')
 	if err != nil {
 		log.Printf("Read error: %v", err)
@@ -218,18 +251,28 @@ func (s *Server) handleConnection(conn net.Conn) {
 		s.SendError(conn, "Gopher messages must end with <CR><LF> (\\r\\n)")
 		return
 	}
+
 	message = strings.TrimSuffix(message, gopher.CRLF)
 
 	ctx := s.getRequestContext(conn, message)
 
-	err = s.HandleRequest(ctx)
-	if err != nil {
+	if err := s.HandleRequest(ctx); err != nil {
 		s.SendError(conn, err.Error())
 		return
 	}
 }
 
 func (s *Server) Serve() error {
+	var cert tls.Certificate
+	var err error
+
+	if s.options.EnableTLS {
+		cert, err = tls.LoadX509KeyPair(s.options.CertificatePath, s.options.KeyPath)
+		if err != nil {
+			return err
+		}
+	}
+
 	// Expose a port to every network interface availables for the moment
 	address := fmt.Sprintf(":%d", s.options.Port)
 
@@ -247,6 +290,6 @@ func (s *Server) Serve() error {
 			continue
 		}
 
-		go s.handleConnection(conn)
+		go s.handleConnection(conn, &cert)
 	}
 }
