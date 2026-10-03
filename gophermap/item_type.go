@@ -3,6 +3,7 @@ package gophermap
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/h2non/filetype"
 )
@@ -93,6 +94,10 @@ func NewItemTypeFromFilePath(filePath string) (byte, error) {
 	extension := kind.Extension
 	if extension == "unknown" {
 		extension = filepath.Ext(filePath)
+	} else {
+		if !strings.HasPrefix(extension, ".") {
+			extension = "." + extension
+		}
 	}
 
 	itemType := NewItemTypeFromFileExtension(extension)
