@@ -7,8 +7,8 @@ import (
 func SafePath(path string) string {
 	st := []string{}
 
-	splittedPath := strings.Split(path, "/")
-	for _, el := range splittedPath {
+	splittedPath := strings.SplitSeq(path, "/")
+	for el := range splittedPath {
 		switch el {
 		case ".":
 			continue
