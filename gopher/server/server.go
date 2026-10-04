@@ -45,7 +45,7 @@ func SendGophermap(conn net.Conn, itemType byte, s string, domain string, port i
 		lines[i] = item.String()
 	}
 
-	gophermapErrorMessage := strings.Join(lines, "\n")
+	gophermapMessage := strings.Join(lines, "\n")
 
-	return SendString(conn, gophermapErrorMessage)
+	return SendString(conn, gophermapMessage)
 }
