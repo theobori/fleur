@@ -38,3 +38,4 @@ cmd/example*
 /weather
 server.crt
 server.key
+simple-client-requests

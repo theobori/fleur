@@ -3,11 +3,14 @@ package gophermap
 import "strings"
 
 func RenderMenu(items ...*Item) string {
-	ans := []string{}
+	n := len(items)
+	arr := make([]string, n)
 
-	for _, item := range items {
-		ans = append(ans, item.String())
+	for i := range n {
+		arr[i] = items[i].String()
 	}
 
-	return strings.Join(ans, "\n")
+	ans := strings.Join(arr, "\n")
+
+	return ans
 }

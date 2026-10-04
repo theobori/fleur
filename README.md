@@ -6,7 +6,7 @@
 
 The name of the project is fleur, pronounced \\flœʁ\\, which means flower.
 
-This GitHub repository is a [KISS](https://en.wikipedia.org/wiki/KISS_principle) project that contains a framework and a CLI. The framework is used to build Gopher applications using the Go language. The goal is to enable users to easily create their own custom Gopher servers in accordance with [RFC 1436](https://www.rfc-editor.org/rfc/rfc1436.html). The CLI is an example of a Gopher application implemented using the framework.
+This GitHub repository is a [KISS](https://en.wikipedia.org/wiki/KISS_principle) project that contains a framework and a CLI. The framework is used to build Gopher applications using the Go language. The goal is to enable users to easily create their own custom Gopher servers in accordance with [RFC 1436](https://www.rfc-editor.org/rfc/rfc1436.html). It also supports client-side Gopher requests. The CLI is an example of a Gopher application implemented using the framework.
 
 ## Getting started
 

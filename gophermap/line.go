@@ -6,7 +6,7 @@ import (
 )
 
 func isGophermapLine(line string) (bool, error) {
-	values := strings.Split(line[1:], "\t")
+	values := strings.Split(line[1:], DefaultSeparator)
 	if len(values) != 4 {
 		return false, fmt.Errorf("Invalid element number on the following Gophermap line:\n%s", line)
 	}

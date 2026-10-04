@@ -3,6 +3,10 @@ package gophermap
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
+
+	"github.com/theobori/fleur/gopher"
 )
 
 type Item struct {
@@ -32,6 +36,74 @@ func (i *Item) String() string {
 		DefaultSeparator,
 		i.Port,
 	)
+}
+
+func NewItemsFromBytes(b []byte) ([]*Item, error) {
+	s := string(b)
+	s = strings.TrimSuffix(s, gopher.CRLF+"."+gopher.CRLF)
+
+	lines := strings.Split(s, gopher.CRLF)
+	// TODO: Add GPH ??
+	items, err := NewItemFromGophermapLines(lines)
+	if err != nil {
+		return nil, err
+	}
+
+	return items, nil
+}
+
+func NewItemFromGophermapLines(lines []string) ([]*Item, error) {
+	n := len(lines)
+	items := make([]*Item, n)
+
+	for i := range n {
+		line := lines[i]
+		item, err := NewItemFromGophermapLine(line)
+		if err != nil {
+			return nil, err
+		}
+
+		items[i] = item
+	}
+
+	return items, nil
+}
+
+func NewItemFromGophermapLine(line string) (*Item, error) {
+	fields := strings.Split(line, DefaultSeparator)
+	if len(fields) < 4 {
+		return nil, fmt.Errorf("Invalid amount of gophermap fields in the line '%s'", line)
+	}
+
+	first := fields[0]
+	lenFirst := len(first)
+	if lenFirst < 1 {
+		return nil, fmt.Errorf("Missing the itemtype field on the line '%s'", line)
+	}
+	itemType := first[0]
+
+	var description string
+	if lenFirst == 1 {
+		description = ""
+	} else {
+		description = first[1:]
+	}
+
+	selector := fields[1]
+	domain := fields[2]
+	portString := fields[3]
+
+	port, err := strconv.Atoi(portString)
+	if err != nil {
+		return nil, err
+	}
+
+	item, err := NewItem(itemType, description, selector, domain, port)
+	if err != nil {
+		return nil, err
+	}
+
+	return item, nil
 }
 
 func NewItemFromFilePath(filePath string, domain string, port int) (*Item, error) {
