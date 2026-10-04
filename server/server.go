@@ -201,10 +201,10 @@ func (s *Server) getRequestContext(conn net.Conn, message string) *RequestContex
 		searchParameter string
 	)
 
-	questionMarkIndex := strings.Index(message, string(gopher.HT))
-	if questionMarkIndex != -1 {
-		searchParameter = message[questionMarkIndex+1:]
-		virtualPath = message[:questionMarkIndex]
+	before, after, ok := strings.Cut(message, string(gopher.HT))
+	if ok {
+		searchParameter = after
+		virtualPath = before
 	} else {
 		searchParameter = ""
 		virtualPath = message
