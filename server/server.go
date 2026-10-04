@@ -59,6 +59,14 @@ func (s *Server) NewItem(itemType byte, description string, selector string) *go
 	}
 }
 
+func (s *Server) SendBytes(conn net.Conn, bytes []byte) error {
+	return gserver.SendBytes(conn, bytes)
+}
+
+func (s *Server) SendString(conn net.Conn, message string) error {
+	return gserver.SendString(conn, message)
+}
+
 func (s *Server) SendGophermap(conn net.Conn, itemType byte, message string) error {
 	return gserver.SendGophermap(conn, itemType, message, s.options.Domain, s.options.Port)
 }
@@ -67,7 +75,7 @@ func (s *Server) SendError(conn net.Conn, message string) error {
 	// Absolute path leak prevention
 	message = strings.ReplaceAll(message, s.options.DirectoryPath, "")
 
-	return gserver.SendString(conn, fmt.Sprintf("Error: %s", message))
+	return s.SendString(conn, fmt.Sprintf("Error: %s", message))
 }
 
 func (s *Server) handleGophermapFilePath(ctx *RequestContext) error {
@@ -76,7 +84,7 @@ func (s *Server) handleGophermapFilePath(ctx *RequestContext) error {
 		return err
 	}
 
-	err = gserver.SendString(ctx.Conn, res)
+	err = s.SendString(ctx.Conn, res)
 	if err != nil {
 		return err
 	}
@@ -97,7 +105,7 @@ func (s *Server) HandleFile(ctx *RequestContext) error {
 		return err
 	}
 
-	err = gserver.SendBytes(ctx.Conn, source)
+	err = s.SendBytes(ctx.Conn, source)
 	if err != nil {
 		return err
 	}
@@ -135,7 +143,7 @@ func (s *Server) HandleDirectory(ctx *RequestContext) error {
 		return err
 	}
 
-	err = gserver.SendString(ctx.Conn, message)
+	err = s.SendString(ctx.Conn, message)
 	if err != nil {
 		return err
 	}

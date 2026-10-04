@@ -8,7 +8,6 @@ import (
 	"strings"
 	"time"
 
-	gserver "github.com/theobori/fleur/gopher/server"
 	"github.com/theobori/fleur/gophermap"
 	"github.com/theobori/fleur/gophermap/evaluator"
 	"github.com/theobori/fleur/server"
@@ -114,7 +113,7 @@ func main() {
 				server.NewItem(gophermap.ItemTypeInlineText, bodyString, "/"),
 			)
 
-			return gserver.SendString(ctx.Conn, page)
+			return server.SendString(ctx.Conn, page)
 		},
 	)
 	router.SetWithWeight(
@@ -127,7 +126,7 @@ func main() {
 				server.NewItem(gophermap.ItemTypeGopherFullTextSearch, "See current weather", "/weather/get"),
 			)
 
-			return gserver.SendString(ctx.Conn, page)
+			return server.SendString(ctx.Conn, page)
 		},
 	)
 	evaluator := evaluator.NewEvaluator(&evaluatorOptions, em)
